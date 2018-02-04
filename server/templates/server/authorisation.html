@@ -1,0 +1,17 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+<h2>Authorization</h2>
+    <p>The application asks for access to your data. Allow?</p>
+<form action="{% url 'server:authorize' %}" method="post">
+    {% csrf_token %}
+    {% for s in scope %}
+         <input type="checkbox" name="{{ s }}" value="{{ s }}" />{{ s }} <br />
+    {%  endfor %}
+    <p>
+        <input type="submit" value="Allow" name="_allow"/>
+        <input type="submit" value="Deny" name="_deny"/>
+    </p>
+</form>
+
+{% endblock %}

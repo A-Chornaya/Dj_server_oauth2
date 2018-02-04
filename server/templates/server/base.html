@@ -1,0 +1,36 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dj Server</title>
+</head>
+<body>
+     <div class="page_header" style="background-color: aquamarine">
+         <div class="login_zone" align="right">
+             <span id="login_label">
+                 <a href="{% url 'server:login' %}">Log in</a>
+             </span>
+             <span id="logout_label">
+                 <a href="{% url 'server:logout' %}">Log out</a>
+             </span>
+         </div>
+         <div class="head_title">
+            <h1 align="center">
+                <span id="home">
+               <a href="{% url 'server:index' %}">
+                   Django Server
+               </a>
+               </span>
+            </h1>
+             <br>
+        </div>
+    </div>
+    <div class="content container">
+        <div class="block_content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+
+  <h2>Sign up</h2>
+
+{% for message in messages %}
+    <p class="{{ message.tags }}">
+    {% if 'valid_error' in message.tags %}{{ message|safe }}{% endif %}
+    </p>
+{% endfor %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Sign up" />
+  </form>
+
+{% endblock %}

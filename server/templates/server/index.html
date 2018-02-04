@@ -1,0 +1,19 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+             <div id="user_part" align="right">
+            {% if user_name %}
+                Welcome, <strong>{{ user_name }}!</strong>
+            {% else %}
+                Welcome, anonymous user!
+            {% endif %}
+         </div>
+<h2>Welcome, developer!</h2>
+<p>Register your application</p>
+
+<form method="get" action="{% url 'server:app_add' %}">
+    <input type="submit" value="Register" />
+
+</form>
+
+{% endblock %}

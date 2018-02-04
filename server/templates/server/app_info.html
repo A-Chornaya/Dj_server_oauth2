@@ -1,0 +1,23 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+
+<h2>Congratulations!</h2>
+<div>
+    {% if client %}
+        <p>You registered as:</p>
+        <ul type="square">
+            <li>Application name: {{client.name}}</li>
+            <li>Main URL: {{client.url}}</li>
+            <li>Redirect URI: {{client.redirect_uri}}</li>
+        <h3>Your SECRETS is:</h3>
+            <li><b>Client Id: </b>{{client.client_id}}</li>
+            <li><b>Client Secret: </b> {{client.client_secret}}</li>
+        </ul>
+        <p>Copy secrets to you app</p>
+    {% else %}
+        <p>Some error. No registered app</p>
+    {% endif %}
+</div>
+
+{% endblock %}
