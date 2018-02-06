@@ -122,9 +122,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
+# Configurate server
 EXPIRE_DELTA = timedelta(days=365)
 EXPIRE_DELTA_PUBLIC = timedelta(days=30)
 EXPIRE_CODE_DELTA = timedelta(seconds=10 * 60)
-
 TOKEN_TYPE = 'Bearer'

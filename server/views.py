@@ -1,10 +1,8 @@
-import json
+from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-from django.utils.timezone import now
-
 from .models import UserData, Client, ClientForm, Grant, AccessToken, RefreshToken
 from .models import UserForm
 
@@ -91,7 +89,6 @@ def authorize(request):
     if request.method == 'POST':
         redirect_uri = request.session['redirect_uri']
         if '_allow' in request.POST:
-
             client = Client.objects.get(client_id=request.session['client_id'])
             user = UserData.objects.get(user_id=request.session['user_id'])
             scopes = []
@@ -99,6 +96,13 @@ def authorize(request):
                 scope = request.POST.get(s, '')
                 if scope:
                     scopes.append(scope)
+            try:
+                grant = Grant.objects.get(client=client, user=user)
+            except ObjectDoesNotExist:
+                pass
+            else:
+                grant.delete()
+            # Making new grant
             grant = Grant(user=user, client=client,
                           redirect_uri=redirect_uri,
                           scope=','.join(scopes))
@@ -133,9 +137,9 @@ def token(request):
         code = request.POST.get('code')
         result_dict = {}
         try:
-            user = UserData.objects.get(user_id=request.session['user_id'])
+            user = UserData.objects.get(grant__code=code)
         except ObjectDoesNotExist:
-            result_dict['message'] = 'This user doesn`t regidtered'
+            result_dict['message'] = 'This user doesn`t registered'
         except KeyError:
             result_dict['message'] = 'This user doesn`t login'
         else:
@@ -146,7 +150,7 @@ def token(request):
                     result_dict['message'] = 'This client app doesn`t registered'
                 else:
                     if client_secret == client.client_secret:
-                        grant = Grant.objects.filter(client=client, user=user)
+                        grant = Grant.objects.get(client=client, user=user)
                         if grant and (code == grant.code):
                             token_obj = AccessToken(user=user, client=client, scope=grant.scope)
                             token_obj.save()
@@ -154,23 +158,23 @@ def token(request):
                                                              access_token=token_obj)
                             refresh_token_obj.save()
                             result_dict = {'access_token': token_obj.token,
-                                            'token_type': 'bearer',
+                                            'token_type': 'Bearer',
                                             'expires_in': token_obj.expires,
-                                            'refresh_token': refresh_token_obj,
+                                            'refresh_token': refresh_token_obj.token,
                                             'id': token_obj.pk
                                             }
                             scope_list = token_obj.scope.split(',')
                             result_dict['info'] = {}
+                            user_dict = UserData.objects.filter(user_id=user.user_id).values()[0]
                             for s in scope_list:
-                                result_dict['info'][s] = user.s
+                                if s in user_dict:
+                                    result_dict['info'][s] = user_dict[s]
                         else:
                                 result_dict['message'] = 'Code of client app is wrong'
                     else:
                         result_dict['message'] = 'Client_id and client_secret didn`t match'
 
-        json_response = json.dumps(result_dict)
-        print(json_response)
-        return json_response
+        return JsonResponse(result_dict)
 
     elif request.method == 'GET':
         return HttpResponseRedirect('/server/')

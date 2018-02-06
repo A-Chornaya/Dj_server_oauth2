@@ -62,6 +62,9 @@ class Grant(models.Model):
     redirect_uri = models.CharField(max_length=255, blank=True)
     scope = models.CharField(max_length=50, choices=SCOPE)
 
+    class Meta:
+        unique_together = ('code', 'user', 'client',)
+
     def __str__(self):
         return self.code
 

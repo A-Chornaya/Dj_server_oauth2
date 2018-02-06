@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import shortuuid
 from django.conf import settings
@@ -29,3 +30,11 @@ def get_token_expiry(public=True):
 
 def get_code_expiry():
     return now() + settings.EXPIRE_CODE_DELTA
+
+
+def datetime_handler(x):
+    if isinstance(x, datetime.datetime):
+        return x.isoformat()
+    raise TypeError("Unknown type")
+
+
